@@ -1,0 +1,91 @@
+<xml version="1.0" description="基础表单配置">
+	<appdef code="SY_FORM">
+		<name>表单定义</name>
+		<class>com.cmk.base.action.FormAction</class>
+		<formlinks>
+			<formlink code="SY_FORM_FIELD">
+				<name>表单字段列表</name>
+				<order>0</order>
+				<linkitems>
+					<linkitem maincode="FORMCODE" subcode="FORMCODE" />
+				</linkitems>
+			</formlink>
+			<formlink code="SY_FORM_BUTTON">
+				<name>表单按钮列表</name>
+				<order>1</order>
+				<linkitems>
+					<linkitem maincode="FORMCODE" subcode="FORMCODE" />
+				</linkitems>
+			</formlink>
+		</formlinks>
+		<forms>
+			<form code="SY_FORM">
+				<name>表单定义</name>
+				<table>SY_FORM</table>
+				<view>SY_FORM</view>
+				<datasource>platform</datasource>
+				<formitems>
+					<formitem code="formcode">
+						<name>表单编码</name>
+						<showtype>hidden</showtype><!-- 显示类型 -->
+						<config></config><!-- 值设定 -->
+						<required>true</required><!-- 必填:true/false -->
+						<unique>true</unique><!-- 唯一:true/false -->
+						<datatype>string</datatype><!-- 数据类型 -->
+						<default></default><!-- 缺省值 -->
+						<showlist>true</showlist><!-- 列表显示:true/false -->
+						<order>0</order><!-- 排序 -->
+						<description></description><!-- 字段描述 -->
+					</formitem>
+					<formitem code="formname">
+						<name>表单名称</name>
+						<showtype>input</showtype><!-- 显示类型 -->
+						<config></config><!-- 值设定 -->
+						<required>true</required><!-- 必填:true/false -->
+						<unique>true</unique><!-- 唯一:true/false -->
+						<datatype>string</datatype><!-- 数据类型 -->
+						<default></default><!-- 缺省值 -->
+						<showlist>true</showlist><!-- 列表显示:true/false -->
+						<order>1</order><!-- 排序 -->
+						<description></description><!-- 字段描述 -->
+					</formitem>
+					<formitem code="...">
+						<name></name>
+						<showtype></showtype><!-- 显示类型 -->
+						<config></config><!-- 值设定 -->
+						<required></required><!-- 必填:true/false -->
+						<unique></unique><!-- 唯一:true/false -->
+						<datatype></datatype><!-- 数据类型 -->
+						<default></default><!-- 缺省值 -->
+						<showlist></showlist><!-- 列表显示:true/false -->
+						<order></order><!-- 排序 -->
+						<description></description><!-- 字段描述 -->
+					</formitem>
+					
+					<formitem code="...">
+						<name></name>
+						<showtype></showtype><!-- 显示类型 -->
+						<config></config><!-- 值设定 -->
+						<required></required><!-- 必填:true/false -->
+						<unique></unique><!-- 唯一:true/false -->
+						<datatype></datatype><!-- 数据类型 -->
+						<default></default><!-- 缺省值 -->
+						<showlist></showlist><!-- 列表显示:true/false -->
+						<order></order><!-- 排序 -->
+						<description></description><!-- 字段描述 -->
+					</formitem>
+				</formitems>
+			</form>
+			<form code="SY_FORM_FIELD">
+				<name></name>
+
+				<formitems>
+
+				</formitems>
+			</form>
+			<form code="SY_FORM_BUTTON">
+
+			</form>
+		</forms>
+	</appdef>
+</xml>
