@@ -144,7 +144,7 @@ public final class DataSourceFactory {
      * @see
      */
     private void install(String ds, DBConfig dbConfig) {
-        if (!dsMap.containsKey(ds)) {
+        if (!dsMap.containsKey(ds) || !testConnection(dbConfig)) {
             boolean isConn = testConnection(dbConfig);
 
             for (int i = 0; i < 3 && !isConn; i++ ) {
@@ -193,30 +193,5 @@ public final class DataSourceFactory {
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * @param bundleContext bundleContext
-     * @return InputStream
-     * @see
-     */
-    private InputStream load(BundleContext bundleContext) {
-        InputStream dbStream = null;
-        String webdbxml = bundleContext.getProperty("WEB_ROOT_PATH") + "/WEB-INF/config/" + confxml;
-        if (new File(webdbxml).exists()) {
-            try {
-                dbStream = new FileInputStream(new File(webdbxml));
-            } catch (Exception e) {
-                Debug.logError("Database configuration file is not set.");
-            }
-        } else {
-            URL configURL = bundleContext.getBundle().getResource("/META-INF/" + confxml);
-            try {
-                dbStream = configURL.openStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return dbStream;
     }
 }
