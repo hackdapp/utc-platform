@@ -1,0 +1,65 @@
+<databases>
+	<provider>com.wmccn.persistence.datasource.pool.impl.DruidImpl</provider>
+	<base-config>
+		<!-- BasicConfig -->
+		<maxActive>20</maxActive>
+       	<initialSize>1</initialSize>
+       	<maxWait>60000</maxWait>
+       	<maxIdle>20</maxIdle>
+       	<minIdle>3</minIdle>
+        <removeAbandoned>true</removeAbandoned>
+        <removeAbandonedTimeout>180</removeAbandonedTimeout>
+		
+		<!-- ValidateConfig -->
+	    <testWhileIdle>true</testWhileIdle>
+        <testOnBorrow>false</testOnBorrow>
+        <testOnReturn>false</testOnReturn>
+        <validationQuery>select sysdate from dual</validationQuery>
+        <validationQueryTimeout>1</validationQueryTimeout>
+        <timeBetweenEvictionRunsMillis>30000</timeBetweenEvictionRunsMillis>
+        <numTestsPerEvictionRun>20</numTestsPerEvictionRun>
+	</<base-config>>
+	
+
+	<database name="platform" default="true">
+		<driver>oracle.jdbc.driver.OracleDriver</driver>
+		<url>jdbc:oracle:thin:@192.168.0.8:1521:orcl</url>
+		<username>plat2</username>
+		<password>plat2</password>
+		
+		<!-- 可直接覆盖DefaultConfig中的配置 -->
+		<maxActive>20</maxActive>
+	</database>
+	<!--
+	<database name="maximo7">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2://192.168.2.141:50005/maxdb75</url>
+		<username>maximo</username>
+		<password>Maximo123456</password>
+	</database>
+  	<database name="maximo6">
+		<driver>oracle.jdbc.driver.OracleDriver</driver>
+		<url>jdbc:oracle:thin:@192.168.2.150:1521:Maximo</url>
+		<username>Maximo</username>
+		<password>Maximo</password>
+	</database> -->
+	
+<!-- 
+	<database name="oa">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2://192.168.2.141:50005/maxdb75
+		</url>
+		<username>maximo</username>
+		<password>Maximo123456</password>
+		<max-connections>20</max-connections>
+		<max-idle-time>30</max-idle-time>
+	</database>
+
+ 	<database name="platform" default="true">
+		<driver>oracle.jdbc.driver.OracleDriver</driver>
+		<url>jdbc:oracle:thin:@demo.wmccn.com:1522:orcl</url>
+		<username>JZERO_II</username>
+		<password>JZERO_II</password>
+	</database>
+	 -->
+</databases>
