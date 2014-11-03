@@ -1,6 +1,7 @@
 package com.cmk.utc.db.datasource.config;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -68,7 +69,7 @@ public abstract class IXmlConfig {
      * @throws Exception
      */
     protected InputStream getInputStream(String configFileName) throws Exception {
-        return this.getClass().getResourceAsStream("/META-INF/" + configFileName);
+        return new FileInputStream(configFileName);
     }
 
     /**

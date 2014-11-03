@@ -126,7 +126,7 @@ public class ClassUtil {
             try {
                 return Thread.currentThread().getContextClassLoader().loadClass(className);
             } catch (ClassNotFoundException e) {
-                throw new ClassNotFoundException("class does not exist", e);
+                throw new ClassNotFoundException("class does not exist."+className, e);
             }
         }
     }

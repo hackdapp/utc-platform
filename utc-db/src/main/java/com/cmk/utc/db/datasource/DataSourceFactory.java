@@ -3,18 +3,15 @@ package com.cmk.utc.db.datasource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.rmi.activation.Activator;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cmk.utc.db.datasource.config.IXmlConfig;
 import com.cmk.utc.db.datasource.config.impl.DBConfigImpl;
 import com.cmk.utc.db.datasource.config.impl.PoolConfigImpl;
 import com.cmk.utc.db.datasource.model.DBConfig;
@@ -35,46 +32,29 @@ import com.cmk.utc.util.CommonUtil;
  */
 public final class DataSourceFactory {
     /**
-     * 模块<br>
-     */
-    private static final String MODULE = DataSourceFactory.class.getName();
-
-    /**
      * 数据源缓存<br>
      */
     private static Map<String, DataSourceMeta> dsMap = new ConcurrentHashMap<String, DataSourceMeta>();
 
     /**
-     * 意义，目的和功能，以及被用到的地方<br>
+     * 工厂实例<br>
      */
     private static DataSourceFactory dataSourceFactory = null;
 
     /**
-     * 缺少数据源名称<br>
+     * 缺省数据源名称<br>
      */
     private static String defaultDsName;
 
     /**
-     * 数据库配置文件<br>
+     * 连接池<br>
      */
-    private static String confxml = "db.xml";
-
     private static IPool ipool;
 
-    private DataSourceFactory() {
-        InputStream dbStream = load(bundleContext);
-        IXmlConfig xmlConfig = new PoolConfigImpl();
-        Map xmlMap = xmlConfig.load(dbStream);
-        String className = (String)xmlMap.get("provider");
-        if (CommonUtil.isNullOrEmpty(className)) {
-            className = C3p0Impl.class.getName();
-        }
-        try {
-            ipool = (IPool)ClassUtil.createObject(className);
-        } catch (Exception e) {
-           e.printStackTrace();
-        }
-    }
+    /**
+     * 
+     */
+    private DataSourceFactory() {}
 
     /**
      * @return DataSourceFactory
@@ -87,14 +67,24 @@ public final class DataSourceFactory {
         return dataSourceFactory;
     }
 
-    
-    public void load(String xml){
-        
+    public void load(String xml) throws Exception {
+        Map xmlMap = new PoolConfigImpl().load(new FileInputStream(xml));
+        String className = (String)xmlMap.get("provider");
+        if (CommonUtil.isNullOrEmpty(className)) {
+            className = C3p0Impl.class.getName();
+        }
+        ipool = (IPool)ClassUtil.createObject(className);
+
+        Map<String, DBConfig> mapConfig = new DBConfigImpl().load(new FileInputStream(xml));
+        for (Entry<String, DBConfig> tmpDbConfig : mapConfig.entrySet()) {
+            DBConfig tmpConfig = tmpDbConfig.getValue();
+            if (tmpConfig.isDefault()) {
+                defaultDsName = tmpDbConfig.getKey();
+            }
+            install(tmpDbConfig.getKey(), tmpConfig);
+        }
     }
-    
-    public void registerDBDataSouce(){
-        
-    }
+
     /**
      * 获取数据源实例
      * 
@@ -103,10 +93,10 @@ public final class DataSourceFactory {
      * @see
      */
     public DataSourceMeta getDataSourceMeta(String ds) {
-        if (!dsMap.containsKey(ds)) {
-            registerDBDataSouce(ds);
+        if (ds != null) {
+            return dsMap.get(ds);
         }
-        return dsMap.get(ds);
+        return null;
     }
 
     public DataSourceMeta getDefaultDataSourceMeta() {
@@ -116,24 +106,7 @@ public final class DataSourceFactory {
     /**
      * @see
      */
-    public void start() {
-        IXmlConfig xmlConfig = new DBConfigImpl();
-        InputStream dbStream = load(bundleContext);
-        Map<String, DBConfig> mapConfig = xmlConfig.load(dbStream);
-        for (Entry<String, DBConfig> tmpDbConfig : mapConfig.entrySet()) {
-            String name = tmpDbConfig.getKey();
-            DBConfig tmpConfig = tmpDbConfig.getValue();
-            if (tmpConfig.isDefault()) {
-                defaultDsName = name;
-            }
-            install(defaultDsName, tmpConfig);
-        }
-    }
-
-    /**
-     * @see
-     */
-    public void stop() {
+    public void clear() {
         defaultDsName = null;
         dsMap.clear();
     }
@@ -161,11 +134,14 @@ public final class DataSourceFactory {
                 break;
             }
             if (!isConn) {
-                System.out.println("Datasource:" + ds + "-> Connection is failed, check the network or configuration information.");
+                System.out.println("Datasource:"
+                                   + ds
+                                   + "-> Connection is failed, check the network or configuration information.");
             } else {
                 dsMap.put(ds, new DataSourceMeta(ds, ipool.loadSource(dbConfig)));
                 DataSourceMeta tmpMeta = dsMap.get(ds);
-                System.out.println("dynamic load datasource: " + tmpMeta.getDbType() + " > " + tmpMeta.getName());
+                System.out.println("dynamic load datasource: " + tmpMeta.getDbType() + " > "
+                                   + tmpMeta.getName());
             }
         } else {
             System.out.println("The datasource has been loaded.");
@@ -173,24 +149,28 @@ public final class DataSourceFactory {
     }
 
     /**
+     * test the Connection.
+     * 
      * @param dbConfig DBConfig
      * @return boolean
      * @see
      */
     private boolean testConnection(DBConfig dbConfig) {
+        Connection connection = null;
         try {
             Class.forName(dbConfig.getDriver());
-            Connection connection = DriverManager.getConnection(dbConfig.getUrl(), dbConfig.getUserName(), dbConfig.getPassword());
+            connection = DriverManager.getConnection(dbConfig.getUrl(), dbConfig.getUserName(),
+                dbConfig.getPassword());
             if (connection != null) {
                 connection.close();
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println( "The database connection Failed. url:" + dbConfig.getUrl() + " user:" + dbConfig.getUserName());
+            System.out.println("The database connection Failed. url:" + dbConfig.getUrl()
+                               + " user:" + dbConfig.getUserName());
             return false;
         } catch (ClassNotFoundException e) {
             System.out.println("the driver class[" + dbConfig.getDriver() + "] is not exist.");
-            e.printStackTrace();
         }
         return false;
     }
